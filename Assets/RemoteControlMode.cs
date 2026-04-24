@@ -11,7 +11,7 @@ public class RemoteControlMode : MonoBehaviour
     void Start()
     {
         speed = 50;
-        angle = 65;
+        angle = 90;
         rb = GetComponent<Rigidbody>();
     }
 
@@ -31,18 +31,10 @@ public class RemoteControlMode : MonoBehaviour
         if (Input.GetKey(KeyCode.S))
         {
             rb.velocity = -1 * transform.forward * speed;
-        }
-        if (Input.GetKey(KeyCode.A))
-        {
-            rb.velocity = -1 * transform.right * speed;
-        }
-        if (Input.GetKey(KeyCode.D))
-        {
-            rb.velocity = transform.right * speed;
-        }    
+        } 
 
 
-        if (Input.GetKeyUp(KeyCode.W) || Input.GetKeyUp(KeyCode.A) || Input.GetKeyUp(KeyCode.S) || Input.GetKeyUp(KeyCode.D))
+        if (Input.GetKeyUp(KeyCode.W) || Input.GetKeyUp(KeyCode.S))
         {
             rb.velocity = Vector3.zero;
         }  
@@ -52,11 +44,11 @@ public class RemoteControlMode : MonoBehaviour
     }
 
     void rotate(){
-        if (Input.GetKey(KeyCode.LeftArrow))
+        if (Input.GetKey(KeyCode.A))
         {
             transform.Rotate(0, -1 * angle * Time.deltaTime, 0);
         }
-        if (Input.GetKey(KeyCode.RightArrow))
+        if (Input.GetKey(KeyCode.D))
         {
             transform.Rotate(0, angle * Time.deltaTime, 0);
         }
