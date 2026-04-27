@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class ColorDetection : MonoBehaviour
@@ -17,9 +18,12 @@ public class ColorDetection : MonoBehaviour
     Color PURPLE;
     Color PINK;
     Color[] ALL_COLORS;
+    string[] names;
+
+    public TextMeshProUGUI colorText;
 
     public Color colorSeen;
-    // Start is called before the first frame update
+
     void Awake()
     {
         RED = new Color(1, 0, 0, 1);
@@ -30,6 +34,8 @@ public class ColorDetection : MonoBehaviour
         PURPLE = new Color(0.502f, 0, 1, 1);
         PINK = new Color(1, 0, 1, 1);
         ALL_COLORS = new Color[]{RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE, PINK};
+        names = new string[]{"Red", "Orange", "Yellow", "Green", "Blue", "Purple", "Pink"};
+        
 
         colorSeen = new Color(0,0,0,1);
         layerMask = LayerMask.GetMask("Block");
@@ -43,13 +49,15 @@ public class ColorDetection : MonoBehaviour
         {
             color = hit.collider.gameObject.GetComponent<Renderer>().sharedMaterial.color;
             colorSeen = color;
-            Debug.Log("block detected, color: " + color);
+            // Debug.Log("block detected, color: " + color);
             checkColor();
             
         }
         else
         {
-            Debug.Log("no block detected");
+            colorText.text = "No Color Detected";
+            colorText.fontSharedMaterial.SetColor(ShaderUtilities.ID_OutlineColor, new Color(0,0,0,1));
+            // Debug.Log("no block detected");
         }
             
     }
@@ -59,6 +67,7 @@ public class ColorDetection : MonoBehaviour
         Color closestColor = new Color(0,0,0,1);
         float maxDistance = 1.5f;
         float distance = 0f;
+        string name = "";
         for(int i = 0; i < ALL_COLORS.Length; i++)
         {
             float rDiff = Mathf.Abs(colorSeen.r - ALL_COLORS[i].r);
@@ -67,14 +76,17 @@ public class ColorDetection : MonoBehaviour
             
 
             distance = Mathf.Sqrt(rDiff*rDiff + gDiff*gDiff + bDiff*bDiff);
-            Debug.Log("Distance: " + distance);
+            // Debug.Log("Distance: " + distance);
             if(distance < maxDistance)
             {
                 maxDistance = distance;
                 closestColor = ALL_COLORS[i];
+                name = names[i];
             }
             
         }
-        Debug.Log("Predicted Color: " + closestColor);
+        // Debug.Log("Predicted Color: " + name);
+        colorText.text = name;
+        colorText.fontSharedMaterial.SetColor(ShaderUtilities.ID_OutlineColor, closestColor);
     }
 }
