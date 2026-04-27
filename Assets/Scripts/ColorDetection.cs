@@ -45,8 +45,9 @@ public class ColorDetection : MonoBehaviour
     {
         RaycastHit hit;
 
-        if(Physics.Raycast(transform.position, Vector3.forward, out hit, 20f, layerMask))
+        if(Physics.Raycast(transform.parent.position + new Vector3(5,3,0), transform.parent.forward, out hit, 20f, layerMask))
         {
+            Debug.DrawLine(transform.position, hit.point, Color.red);
             color = hit.collider.gameObject.GetComponent<Renderer>().sharedMaterial.color;
             colorSeen = color;
             // Debug.Log("block detected, color: " + color);
@@ -56,6 +57,7 @@ public class ColorDetection : MonoBehaviour
         else
         {
             colorText.text = "No Color Detected";
+            Debug.DrawLine(transform.position, hit.point, Color.blue);
             colorText.fontSharedMaterial.SetColor(ShaderUtilities.ID_OutlineColor, new Color(0,0,0,1));
             // Debug.Log("no block detected");
         }
