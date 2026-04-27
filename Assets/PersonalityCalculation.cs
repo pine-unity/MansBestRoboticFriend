@@ -45,6 +45,7 @@ public class PersonalityCalculation : MonoBehaviour
         return finalProbability;
     }
 
+    // based on personality traits only
     float pA()
     {
         float probability = 1 / (1 + Mathf.Exp(normVal));
@@ -58,6 +59,7 @@ public class PersonalityCalculation : MonoBehaviour
         return probability; 
     }
 
+    // global praises/scolds
     float pBGivenA()
     {
         float probability = (totalPraises + 1) / (totalPraises + totalScolds + 2);
