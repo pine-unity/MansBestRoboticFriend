@@ -45,7 +45,7 @@ public class ColorDetection : MonoBehaviour
     {
         RaycastHit hit;
 
-        if(Physics.Raycast(transform.parent.position + new Vector3(5,3,0), transform.parent.forward, out hit, 20f, layerMask))
+        if(Physics.Raycast(transform.parent.position + new Vector3(5,3,0), transform.parent.forward, out hit, 30f, layerMask))
         {
             Debug.DrawLine(transform.position, hit.point, Color.red);
             color = hit.collider.gameObject.GetComponent<Renderer>().sharedMaterial.color;
