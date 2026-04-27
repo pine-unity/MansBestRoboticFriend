@@ -7,7 +7,6 @@ public class ColorDetection : MonoBehaviour
 {
     // so that only blocks are detected and not walls etc
     LayerMask layerMask;
-    Color color;
 
     // Constants
     Color RED;
@@ -35,9 +34,9 @@ public class ColorDetection : MonoBehaviour
         PINK = new Color(1, 0, 1, 1);
         ALL_COLORS = new Color[]{RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE, PINK};
         names = new string[]{"Red", "Orange", "Yellow", "Green", "Blue", "Purple", "Pink"};
-        
 
         colorSeen = new Color(0,0,0,1);
+
         layerMask = LayerMask.GetMask("Block");
     }
 
@@ -45,14 +44,12 @@ public class ColorDetection : MonoBehaviour
     {
         RaycastHit hit;
 
-        if(Physics.Raycast(transform.parent.position + new Vector3(5,3,0), transform.parent.forward, out hit, 30f, layerMask))
+        if(Physics.Raycast(transform.position, transform.up, out hit, 40f, layerMask))
         {
             Debug.DrawLine(transform.position, hit.point, Color.red);
-            color = hit.collider.gameObject.GetComponent<Renderer>().sharedMaterial.color;
-            colorSeen = color;
+            colorSeen = hit.collider.gameObject.GetComponent<Renderer>().sharedMaterial.color;
             // Debug.Log("block detected, color: " + color);
-            checkColor();
-            
+            checkColor();  
         }
         else
         {
@@ -60,8 +57,7 @@ public class ColorDetection : MonoBehaviour
             Debug.DrawLine(transform.position, hit.point, Color.blue);
             colorText.fontSharedMaterial.SetColor(ShaderUtilities.ID_OutlineColor, new Color(0,0,0,1));
             // Debug.Log("no block detected");
-        }
-            
+        }        
     }
 
     void checkColor()
@@ -84,8 +80,7 @@ public class ColorDetection : MonoBehaviour
                 maxDistance = distance;
                 closestColor = ALL_COLORS[i];
                 name = names[i];
-            }
-            
+            } 
         }
         // Debug.Log("Predicted Color: " + name);
         colorText.text = name;
