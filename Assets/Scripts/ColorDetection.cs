@@ -17,7 +17,7 @@ public class ColorDetection : MonoBehaviour
     Color PURPLE;
     Color PINK;
     Color[] ALL_COLORS;
-    string[] names;
+    string[] NAMES;
 
     public TextMeshProUGUI colorText;
 
@@ -33,7 +33,7 @@ public class ColorDetection : MonoBehaviour
         PURPLE = new Color(0.502f, 0, 1, 1);
         PINK = new Color(1, 0, 1, 1);
         ALL_COLORS = new Color[]{RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE, PINK};
-        names = new string[]{"Red", "Orange", "Yellow", "Green", "Blue", "Purple", "Pink"};
+        NAMES = new string[]{"Red", "Orange", "Yellow", "Green", "Blue", "Purple", "Pink"};
 
         colorSeen = new Color(0,0,0,1);
 
@@ -79,7 +79,7 @@ public class ColorDetection : MonoBehaviour
             {
                 maxDistance = distance;
                 closestColor = ALL_COLORS[i];
-                name = names[i];
+                name = NAMES[i];
             } 
         }
         // Debug.Log("Predicted Color: " + name);
