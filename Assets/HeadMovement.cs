@@ -34,13 +34,13 @@ public class HeadMovement : MonoBehaviour
             transform.Rotate(0, 0, rotAngle * Time.deltaTime);
         }
 
-        if(verticalRotScale > -40 && Input.GetKey(KeyCode.UpArrow)) 
+        if(verticalRotScale > -40 && Input.GetKey(KeyCode.DownArrow)) 
         {   
             verticalRotScale--;
             transform.Rotate(rotAngle * Time.deltaTime, 0, 0);
         }
 
-        if(verticalRotScale < 20 && Input.GetKey(KeyCode.DownArrow))
+        if(verticalRotScale < 20 && Input.GetKey(KeyCode.UpArrow))
         { 
             verticalRotScale++;
             transform.Rotate(-1 * rotAngle * Time.deltaTime, 0, 0); 
