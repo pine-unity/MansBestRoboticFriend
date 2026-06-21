@@ -31,14 +31,16 @@ public class PersonalityCalculation : MonoBehaviour
     string[] youngTypes = {"Lazy Boy", "Bad Boy", "Good Boy"};
     string[] adultTypes = {"Lazy Cat", "Rumble Cat", "Lazy Dog", "Rumble Dog"};
     
+    string personalityType;
+
     /*
 
     EVOLUTION TIMES (for reference)
     ***************
-    2 h 46 mins --> Newborn to Baby
-    8 h 20 mins --> Baby to Child
-    27 h 46 mins --> Child to Young
-    111 h 06 mins --> Young to Adult
+    166 mins --> Newborn to Baby
+    500 mins --> Baby to Child
+    1666 mins --> Child to Young
+    6666 mins --> Young to Adult
 
     Per AiboHack: "Evolution (or 'Growing') from one stage 
     happens after a certain amount of 'quality time' is spent 
@@ -51,8 +53,18 @@ public class PersonalityCalculation : MonoBehaviour
 
     */
 
+    [SerializeField] float qualityTime = 0f;
+
+    Queue<float> interactions = new Queue<float>();
+    float timeWindow = 60f;
+
+    [SerializeField] string qualityTimeType = "Slow";
+
     void Start()
     {
+        personalityType = stages[0];
+        Debug.Log("Starting Stage: " + personalityType);
+
         happyScale = 0.5f;
         sadScale = 0.5f;
         angerScale = 0.5f;
@@ -65,18 +77,51 @@ public class PersonalityCalculation : MonoBehaviour
         totalScolds = 0;
 
         StartCoroutine(shiftMoodsToBaseline()); 
+        StartCoroutine(incrementTime()); 
     }
 
     void Update()
     {
         difference = hyperactivity - laziness;
         normVal = difference / (total + 1); 
+        determineQualityTimeType();
+    }
+
+    void determineQualityTimeType()
+    {
+        if(interactions.Count > 0)
+        {
+            if(Time.time - interactions.Peek() > timeWindow)
+            {
+                qualityTimeType = "Slow";
+                interactions.Dequeue();
+            }
+        }
+
+    }
+
+    IEnumerator incrementTime()
+    {
+        while (true)
+        {
+            if (qualityTimeType.Equals("Slow"))
+            {
+                qualityTime += 0.25f; 
+            } else if (qualityTimeType.Equals("Normal"))
+            {
+                qualityTime += 1;
+            }
+            yield return new WaitForSeconds(1f);
+        }
+    
     }
 
     // will implement action-specific praises/scolds later
     public void praiseIncrease()
     {
+        qualityTimeType = "Normal Time";
         totalPraises++;
+        interactions.Enqueue(Time.time);
 
         // make him more happy :3
         if(happyScale <= 0.5)
@@ -117,7 +162,9 @@ public class PersonalityCalculation : MonoBehaviour
 
     public void scoldIncrease()
     {
+        qualityTimeType = "Normal Time";
         totalScolds++;
+        interactions.Enqueue(Time.time);
 
         // make him more ANGRY >:(
         if(angerScale <= 0.5)
@@ -150,6 +197,7 @@ public class PersonalityCalculation : MonoBehaviour
         }
 
         Debug.Log(totalScolds);
+
     }
 
     // bayesian probability
@@ -200,4 +248,5 @@ public class PersonalityCalculation : MonoBehaviour
         }
         
     }
+
 }
