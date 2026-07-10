@@ -133,19 +133,23 @@ public class PersonalityCalculation : MonoBehaviour
         {
             // Newborn
             evolutionStage = 0;
-        }  else if (qualityTime >= 166 && qualityTime < 500)
+        }  
+        else if (qualityTime >= 166 && qualityTime < 500)
         {
             // Baby
             evolutionStage = 1;
-        } else if (qualityTime >= 500 && qualityTime < 1666)
+        } 
+        else if (qualityTime >= 500 && qualityTime < 1666)
         {
             // Child
             evolutionStage = 2;
-        } else if (qualityTime >= 1666 && qualityTime < 6666)
+        } 
+        else if (qualityTime >= 1666 && qualityTime < 6666)
         {
             // Young
             evolutionStage = 3;
-        } else
+        } 
+        else
         {
             // Adult
             evolutionStage = 4;
@@ -166,7 +170,8 @@ public class PersonalityCalculation : MonoBehaviour
             {
                 // Rumble Child
                 personalityType = childTypes[1];
-            } else
+            } 
+            else
             {
                 // Lazy Child
                 personalityType = childTypes[0];
@@ -210,7 +215,8 @@ public class PersonalityCalculation : MonoBehaviour
                 {
                     // Lazy Cat
                     personalityType = adultTypes[0];
-                } else
+                } 
+                else
                 {
                     // Rumble Cat
                     personalityType = adultTypes[1];
@@ -278,7 +284,8 @@ public class PersonalityCalculation : MonoBehaviour
         if (qualityTimeType.Equals("Slow"))
         {
             qualityTime += 0.25f; 
-        } else if (qualityTimeType.Equals("Normal"))
+        } 
+        else if (qualityTimeType.Equals("Normal"))
         {
             qualityTime += 1;
         }
@@ -301,7 +308,8 @@ public class PersonalityCalculation : MonoBehaviour
         if(happyScale <= 0.5)
         {
             happyScale += 0.005f;
-        } else if(happyScale < 1)
+        } 
+        else if(happyScale < 1)
         {
             float difference = 1 - happyScale;
             happyScale += difference * 0.01f;
@@ -344,7 +352,8 @@ public class PersonalityCalculation : MonoBehaviour
         if(angerScale <= 0.5)
         {
             angerScale += 0.005f;
-        } else if(angerScale < 1)
+        } 
+        else if(angerScale < 1)
         {
             float difference = 1 - angerScale;
             angerScale += difference * 0.01f;
