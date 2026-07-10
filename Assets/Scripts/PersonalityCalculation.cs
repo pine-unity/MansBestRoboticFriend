@@ -4,24 +4,29 @@ using UnityEngine;
 
 public class PersonalityCalculation : MonoBehaviour
 {
+    // basic personality traits
     [SerializeField] float hyperactivity;
     [SerializeField] float laziness;
 
+    // interactions
     [SerializeField] float totalPraises;
     [SerializeField] float totalScolds;
 
+    // values used for calculating bayesian probability
     float difference;
     float total;
     float normVal;
 
+    // related to the robot's current feelings
     string emotion;
-
     [SerializeField] float happyScale;
     [SerializeField] float sadScale;
     [SerializeField] float angerScale;
 
     // stages 1-5, newborn, baby, child, young, adult
-    [SerializeField] int evolutionStage = 1;
+    [SerializeField] int evolutionStage;
+    // current stage name as a string 
+    [SerializeField] string evoStageStr;
 
     // baseline stages
     string[] stages = {"Newborn", "Baby", "Child", "Young", "Adult"};
@@ -31,7 +36,28 @@ public class PersonalityCalculation : MonoBehaviour
     string[] youngTypes = {"Lazy Boy", "Bad Boy", "Good Boy"};
     string[] adultTypes = {"Lazy Cat", "Rumble Cat", "Lazy Dog", "Rumble Dog"};
     
-    string personalityType;
+    [SerializeField] string personalityType;
+
+    // Determining factor to decide whether a Baby
+    // turns into a Lazy Child or a Rumble Child
+    float shakenIndex;
+
+    // Determines evolution between Child and Young,
+    // and Young and Adult. Essentially indicates whether the majority
+    // of the current stage was spent in a predominantly "blue" (or cool-colored)
+    // room.
+    bool blueRoom;
+
+    // Determines whether to evolve a Lazy Boy 
+    // to a Lazy Cat or Rumble Cat (Youth to Adult)
+    float lSkill;
+
+    // These flags ensure the game
+    // doesn't try to evolve to Child/Young/Adult
+    // several times
+    bool evolvedToChild;
+    bool evolvedToYoung;
+    bool evolvedToAdult;
 
     /*
 
@@ -53,16 +79,29 @@ public class PersonalityCalculation : MonoBehaviour
 
     */
 
-    [SerializeField] float qualityTime = 0f;
+    [SerializeField] float qualityTime;
 
     Queue<float> interactions = new Queue<float>();
     float timeWindow = 60f;
 
-    [SerializeField] string qualityTimeType = "Slow";
+    [SerializeField] string qualityTimeType;
 
     void Start()
     {
-        personalityType = stages[0];
+        evolvedToChild = false;
+        evolvedToYoung = false;
+        evolvedToAdult = false;
+
+        shakenIndex = 0f;
+        blueRoom = false;
+        lSkill = 0f;
+
+        qualityTime = 0f;
+        qualityTimeType = "Slow";
+
+        evolutionStage = 0;
+        personalityType = "Undetermined";
+
         Debug.Log("Starting Stage: " + personalityType);
 
         happyScale = 0.5f;
@@ -85,8 +124,139 @@ public class PersonalityCalculation : MonoBehaviour
         difference = hyperactivity - laziness;
         normVal = difference / (total + 1); 
         determineQualityTimeType();
+        evoStageStr = stages[evolutionStage];
     }
 
+    void ageUp()
+    {
+        if(qualityTime < 166)
+        {
+            // Newborn
+            evolutionStage = 0;
+        }  else if (qualityTime >= 166 && qualityTime < 500)
+        {
+            // Baby
+            evolutionStage = 1;
+        } else if (qualityTime >= 500 && qualityTime < 1666)
+        {
+            // Child
+            evolutionStage = 2;
+        } else if (qualityTime >= 1666 && qualityTime < 6666)
+        {
+            // Young
+            evolutionStage = 3;
+        } else
+        {
+            // Adult
+            evolutionStage = 4;
+        }
+
+
+        determinePersonality();
+        
+    }
+
+    void determinePersonality()
+    {
+        if(evolutionStage == 2 && !evolvedToChild)
+        {
+            evolvedToChild = true;
+            // Baby to Child stage
+            if(shakenIndex >= 5.0)
+            {
+                // Rumble Child
+                personalityType = childTypes[1];
+            } else
+            {
+                // Lazy Child
+                personalityType = childTypes[0];
+            }
+            
+        } 
+        else if(evolutionStage == 3 && !evolvedToYoung)
+        {
+            evolvedToYoung = true;
+            // Child to Young stage
+            if (blueRoom)
+            {
+                if (personalityType.Equals(childTypes[0]))
+                {
+                    // Lazy Boy
+                    personalityType = youngTypes[0];
+                } 
+                else
+                {
+                    // Good Boy
+                    personalityType = youngTypes[2];
+                }
+                blueRoom = false;
+                
+            } 
+            else
+            {
+                // Bad Boy
+                personalityType = youngTypes[1];
+            }
+            
+            
+        } 
+        else if(evolutionStage == 4 && !evolvedToAdult)
+        {
+            evolvedToAdult = true;
+            // Young to Adult stage
+            if (personalityType.Equals(youngTypes[0]))
+            {
+                if(lSkill < 5.0)
+                {
+                    // Lazy Cat
+                    personalityType = adultTypes[0];
+                } else
+                {
+                    // Rumble Cat
+                    personalityType = adultTypes[1];
+                }
+            } 
+            else if(personalityType.Equals(youngTypes[1]))
+            {
+                if (blueRoom)
+                {
+                    // Lazy Dog
+                   personalityType = adultTypes[2]; 
+                   blueRoom = false;
+                }
+                else
+                {
+                    // Rumble Cat
+                   personalityType = adultTypes[1]; 
+                }
+
+            } 
+            else
+            {
+                if (blueRoom)
+                {
+                    // Rumble Dog
+                    personalityType = adultTypes[3];
+                    blueRoom = false;
+                }
+                else
+                {
+                    // Lazy Dog
+                    personalityType = adultTypes[2];
+                }
+            }
+
+        } 
+        else if(evolutionStage == 0)
+        {
+            // Newborn or Baby stages
+           personalityType = "Undetermined"; 
+        }
+    
+    }
+
+    // determines whether to count time slower or faster 
+    // based on user interaction with the robot
     void determineQualityTimeType()
     {
         if(interactions.Count > 0)
@@ -100,26 +270,30 @@ public class PersonalityCalculation : MonoBehaviour
 
     }
 
+    // increases the time, to advance the robot 
+    // through the evolution stages naturally
     IEnumerator incrementTime()
     {
-        while (true)
+        
+        if (qualityTimeType.Equals("Slow"))
         {
-            if (qualityTimeType.Equals("Slow"))
-            {
-                qualityTime += 0.25f; 
-            } else if (qualityTimeType.Equals("Normal"))
-            {
-                qualityTime += 1;
-            }
-            yield return new WaitForSeconds(1f);
+            qualityTime += 0.25f; 
+        } else if (qualityTimeType.Equals("Normal"))
+        {
+            qualityTime += 1;
         }
+        ageUp();
+        yield return new WaitForSeconds(1f);
+        
+
+        StartCoroutine(incrementTime());
     
     }
 
     // will implement action-specific praises/scolds later
     public void praiseIncrease()
     {
-        qualityTimeType = "Normal Time";
+        qualityTimeType = "Normal";
         totalPraises++;
         interactions.Enqueue(Time.time);
 
@@ -157,12 +331,12 @@ public class PersonalityCalculation : MonoBehaviour
             }
         }
 
-        Debug.Log(totalPraises);
+        Debug.Log("Total praises: " + totalPraises);
     }
 
     public void scoldIncrease()
     {
-        qualityTimeType = "Normal Time";
+        qualityTimeType = "Normal";
         totalScolds++;
         interactions.Enqueue(Time.time);
 
@@ -196,7 +370,7 @@ public class PersonalityCalculation : MonoBehaviour
             }
         }
 
-        Debug.Log(totalScolds);
+        Debug.Log("Total scolds: " + totalScolds);
 
     }
 
@@ -235,7 +409,9 @@ public class PersonalityCalculation : MonoBehaviour
         float probability = (totalPraises + 1f) / (totalPraises + totalScolds + 2f);
         return probability; 
     }
-
+    
+    // ensures the robot doesn't always stay at the same mood forever when 
+    // interactions are lacking
     IEnumerator shiftMoodsToBaseline()
     {
 
